@@ -7,7 +7,7 @@ Gomailer is a Go programming language package that provides functionality for se
 To use Gomailer, you need to have Go installed. Once you have Go installed, you can use the following command to install Gomailer:
 
 ```golang
-go get github.com/Kazion500/gomailer
+go get github.com/kazion500/gomailer
 ```
 
 ### Usage
@@ -18,7 +18,7 @@ Here's an example of how to use Gomailer to send an email:
 package main
 
 import (
-    "github.com/Kazion500/gomailer"
+    "github.com/kazion500/gomailer"
 )
 
 func main() {
