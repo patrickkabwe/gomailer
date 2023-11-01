@@ -1,4 +1,4 @@
-module github.com/kazion500/gomailer
+module github.com/patrickkabwe/gomailer
 
 go 1.19
 
