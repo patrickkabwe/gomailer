@@ -188,7 +188,8 @@ func (gm *goMailer) headersToBytes(headers map[string]string, message EmailMessa
 	gm.msg.WriteString("\r\n")
 
 	gm.msg.WriteString("\r\n--" + gm.writer.Boundary() + "\r\n")
-	if message.Template.Path != "" && strings.Contains(string(message.Body), "<html>") {
+	hasHTML := strings.Contains(string(message.Body), "html")
+	if hasHTML || (message.Template.Path != "" && hasHTML) {
 		contentType = "text/html"
 	} else {
 		contentType = "text/plain"
