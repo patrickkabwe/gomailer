@@ -96,9 +96,15 @@ func New(options GoMailerOption) GoMailer {
 }
 
 func (gm *goMailer) SendMail(message EmailMessage) error {
+	if message.Name != "" && message.From == "" {
+		add := mail.Address{Name: message.Name, Address: gm.username}
+		message.From = add.String()
+	}
+
 	if message.From == "" {
 		message.From = gm.username
 	}
+
 	if message.Template.Path != "" {
 		if message.Template.Data == nil {
 			return fmt.Errorf("TemplateData is required when using a template")
@@ -108,11 +114,6 @@ func (gm *goMailer) SendMail(message EmailMessage) error {
 			return err
 		}
 		message.Body = mgs
-	}
-
-	if message.Name != "" {
-		add := mail.Address{Name: message.Name, Address: message.From}
-		message.From = add.String()
 	}
 
 	return gm.sendMail(message)
