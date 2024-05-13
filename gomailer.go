@@ -150,6 +150,7 @@ func (gm *goMailer) headersToBytes(headers map[string]string, message []byte) []
 	h = append(h, string(message))
 
 	msg := []byte(strings.Join(h, ""))
+	gm.msg.WriteString("\r\n")
 
 	return msg
 }
