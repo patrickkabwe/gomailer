@@ -1,0 +1,19 @@
+## Gomailer 
+
+Gomailer is a simple Go library for sending emails from Go applications. It supports sending text or HTML emails, email templates, email attachments and many more.
+
+### Installation 🛠️
+
+To use Gomailer, you need to have Go installed. Once you have Go installed, you can use the following command to install Gomailer:
+
+```golang
+go get github.com/patrickkabwe/gomailer
+```
+
+### Features 🚀
+
+- Send emails from Go applications
+- Text or HTML email content supported
+- Email templates
+- Email Attachments - (WIP)
+- Secure connections(SSL/TLS) - (WIP)
