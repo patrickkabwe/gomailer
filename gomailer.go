@@ -7,6 +7,7 @@ import (
 	"log"
 	"mime/multipart"
 	"net"
+	"net/mail"
 	"net/smtp"
 	"regexp"
 	"strings"
@@ -107,6 +108,11 @@ func (gm *goMailer) SendMail(message EmailMessage) error {
 			return err
 		}
 		message.Body = mgs
+	}
+
+	if message.Name != "" {
+		add := mail.Address{Name: message.Name, Address: message.From}
+		message.From = add.String()
 	}
 
 	return gm.sendMail(message)
