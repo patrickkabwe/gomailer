@@ -1,4 +1,4 @@
-## Gomailer 
+# Gomailer 
 
 Gomailer is a simple Go library for sending emails from Go applications. It supports sending text or HTML emails, email templates, email attachments and many more.
 
