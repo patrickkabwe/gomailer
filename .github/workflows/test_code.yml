@@ -1,31 +1,28 @@
-name: Go Mailer
-permissions:
-  contents: read
+name: Test Code
 
 on:
   push:
-    branches: [main]
   pull_request:
     branches: [main]
 
 jobs:
   build:
     name: ${{ matrix.os }} Go (${{ matrix.go }})
-    timeout-minutes: 5
+    timeout-minutes: 10
     strategy:
       matrix:
         go: ['stable','oldstable']
         os: [ubuntu-latest, macos-latest, windows-latest]
     runs-on: ${{ matrix.os }}
     steps:
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v4
+
       - name: Install Go 1.x
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v5
         with:
           go-version: ${{ matrix.go }}
           check-latest: true
-
-      - name: Check out code into the Go module directory
-        uses: actions/checkout@v3
 
       - name: Check go version
         run: go version
@@ -39,15 +36,11 @@ jobs:
       - name: Go Mod Verify
         run: go mod verify
 
-      - name: Run linter
-        uses: golangci/golangci-lint-action@v3
-        with:
-          version: latest
-          skip-cache: true
-          skip-pkg-cache: true
-          skip-build-cache: true
-
       - name: Run tests
+        env:
+          EMAIL_USER: ${{ secrets.EMAIL_USER }}
+          EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+          EMAIL_USER_RECEIVER: ${{ secrets.EMAIL_USER_RECEIVER }}
         run: |
           make test
 

@@ -1,8 +1,8 @@
-## Gomailer
+## Gomailer 
 
-Gomailer is a Go programming language package that provides functionality for sending emails. It allows Go developers to send emails from within their Go applications, making it easy to integrate email functionality into their software.
+Gomailer is a simple Go library for sending emails from Go applications. It supports sending text or HTML emails, email templates, email attachments and many more.
 
-### Installation
+### Installation 🛠️
 
 To use Gomailer, you need to have Go installed. Once you have Go installed, you can use the following command to install Gomailer:
 
@@ -10,7 +10,16 @@ To use Gomailer, you need to have Go installed. Once you have Go installed, you 
 go get github.com/patrickkabwe/gomailer
 ```
 
-### Usage
+### Features 🚀
+
+- Send emails from Go applications
+- Text or HTML email content supported
+- Email templates
+- Email Attachments - (WIP)
+- Secure connections(SSL/TLS) - (WIP)
+
+
+### Usage 📝
 
 Here's an example of how to use Gomailer to send an email:
 
@@ -38,12 +47,7 @@ func main() {
         Body:    []byte("This is a test email sent from Gomailer."),
     }
 
-    emailOptions := gomailer.EmailOption{
-        ContentType: "text/plain",
-        Secure:      true,
-    }
-
-    err := gm.SendMail(message, emailOptions)
+    err := gm.SendMail(message)
     if err != nil {
         // Handle error
     }
@@ -66,24 +70,13 @@ func main() {
 `Subject` - the subject of the email
 `Body` - can be a string (text) or (html)
 
-#### `EmailOption`
-
-`TemPath` - path to the email template
-`TemData` - data to be passed to the email template
-`ContentType` - type of email content (text/html or text/plain)
-`Secure` - whether to use secure connection when sending the email
-
 #### `New(options GoMailerOption) GoMailer`
 
 Returns a new GoMailer instance with the provided options.
 
-#### `SendMail(message EmailMessage, options EmailOption) error`
-
+#### `SendMail(message EmailMessage) error`
 Sends an email using the provided message and options.
 
-#### `SendMailWithTemplate(from string, to []string, subject string, options EmailOption) error`
-
-Sends an email with the provided email template.
 
 ### License
 
