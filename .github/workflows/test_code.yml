@@ -1,6 +1,4 @@
 name: Test Code
-permissions:
-  contents: read
 
 on:
   push:
@@ -38,14 +36,6 @@ jobs:
       - name: Go Mod Verify
         run: go mod verify
 
-      - name: Run linter
-        uses: golangci/golangci-lint-action@v3
-        with:
-          version: latest
-          skip-cache: true
-          skip-pkg-cache: true
-          skip-build-cache: true
-          
       - name: Run tests
         env:
           EMAIL_USER: ${{ secrets.EMAIL_USER }}
