@@ -3,8 +3,6 @@ name: Release
 on:
   release: 
     types: [prereleased, published]
-  schedule:
-    - cron: '0 0 * * 1' 
 
 permissions:
   contents: write
