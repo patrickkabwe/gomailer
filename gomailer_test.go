@@ -2,20 +2,20 @@ package gomailer
 
 import (
 	"net/mail"
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
-var u = mail.Address{Name: "Sender Name", Address: "patrickckabwe@gmail.com"}
+var u = mail.Address{Name: "Sender Name", Address: os.Getenv("EMAIL_USER")}
 
-var to = []string{"patrickkabwe45@yahoo.com"}
+var to = []string{os.Getenv("EMAIL_USER_RECEIVER")}
 var host = "smtp.gmail.com"
 var port = 587
-var password = "fqjfeqttraieafkt"
+var password = os.Getenv("EMAIL_PASSWORD")
 
 func TestGoMailer_New(t *testing.T) {
-
 	testCases := []struct {
 		name string
 		opts GoMailerOption
@@ -38,7 +38,6 @@ func TestGoMailer_New(t *testing.T) {
 			assert.IsType(t, &goMailer{}, mailer)
 			assert.Equal(t, tc.opts.Host, mailer.(*goMailer).host)
 			assert.Equal(t, tc.opts.Port, mailer.(*goMailer).port)
-
 		})
 	}
 }
@@ -47,18 +46,77 @@ func TestGoMailer_SendMail(t *testing.T) {
 	testCases := []struct {
 		name       string
 		message    EmailMessage
-		opts       EmailOption
 		shouldFail bool
 	}{
 		{
-			name: "Should send mail",
+			name: "Should send mail with text body",
 			message: EmailMessage{
-				From:    u.Address,
+				From:    u.String(),
 				To:      to,
-				Subject: "Test Mail",
+				Subject: "Text Email",
 				Body:    []byte("Hello Test"),
+				CC:      []string{u.Address},
 			},
-			opts:       EmailOption{},
+			shouldFail: false,
+		},
+		{
+			name: "Should send mail with attachment and text body",
+			message: EmailMessage{
+				From:    u.String(),
+				To:      to,
+				Subject: "Email with attachment",
+				Body:    []byte("Hello Test"),
+				CC:      []string{u.Address},
+				Attachments: []Attachment{
+					{
+						Name: "attachment.txt",
+						Path: "testdata/attachments/attachment.txt",
+					},
+				},
+			},
+			shouldFail: false,
+		},
+		{
+			name: "Should send mail with template",
+			message: EmailMessage{
+				From:    u.String(),
+				To:      to,
+				Body:    []byte("Hello Test"),
+				Subject: "Email with template and attachment",
+				Attachments: []Attachment{
+					{
+						Name: "attachment.txt",
+						Path: "testdata/attachments/attachment.txt",
+					},
+				},
+				Template: Template{
+					Path: "testdata/template/email.html",
+					Data: struct {
+						Name string
+					}{
+						Name: "Patrick",
+					},
+				},
+			},
+			shouldFail: false,
+		},
+		{
+			name: "Should send mail with template and attachment",
+			message: EmailMessage{
+				From:    u.String(),
+				To:      to,
+				Body:    []byte("Hello Test"),
+				Subject: "Email with template",
+				CC:      []string{u.Address},
+				Template: Template{
+					Path: "testdata/template/email.html",
+					Data: struct {
+						Name string
+					}{
+						Name: "Patrick",
+					},
+				},
+			},
 			shouldFail: false,
 		},
 		{
@@ -68,7 +126,6 @@ func TestGoMailer_SendMail(t *testing.T) {
 				Subject: "Test Mail",
 				Body:    []byte("Hello Test"),
 			},
-			opts:       EmailOption{},
 			shouldFail: true,
 		},
 		{
@@ -77,7 +134,6 @@ func TestGoMailer_SendMail(t *testing.T) {
 				Subject: "Test Mail",
 				Body:    []byte("Hello Test"),
 			},
-			opts:       EmailOption{},
 			shouldFail: true,
 		},
 	}
@@ -91,94 +147,12 @@ func TestGoMailer_SendMail(t *testing.T) {
 				Password: password,
 			})
 
-			err := mailer.SendMail(tc.message, tc.opts)
+			err := mailer.SendMail(tc.message)
 			if tc.shouldFail && err != nil {
 				assert.Error(t, err)
 			} else {
 				assert.NoError(t, err)
 			}
-		})
-	}
-}
-
-func TestGoMailer_SendMailWithTemplate(t *testing.T) {
-	testCases := []struct {
-		name       string
-		message    EmailMessage
-		opts       EmailOption
-		shouldFail bool
-	}{
-		{
-			name: "Should not send mail with template",
-			message: EmailMessage{
-				From:    u.Address,
-				To:      to,
-				Subject: "Test Mail",
-				Body:    []byte("Hello Test"),
-			},
-			opts:       EmailOption{},
-			shouldFail: true,
-		},
-		{
-			name: "Should send mail with template",
-			message: EmailMessage{
-				From:    u.Address,
-				To:      to,
-				Subject: "Test Mail",
-				Body:    []byte("Hello Test"),
-			},
-			opts: EmailOption{
-				TemPath: "testdata/template/test.html",
-				TemData: struct{ Name string }{Name: "Patrick"},
-			},
-			shouldFail: false,
-		},
-		{
-			name: "Should not send mail with template when template path is invalid",
-			message: EmailMessage{
-				From:    u.Address,
-				To:      to,
-				Subject: "Test Mail",
-				Body:    []byte("Hello Test"),
-			},
-			opts: EmailOption{
-				TemPath: "testdata/template/test.html",
-				TemData: struct{ Name string }{Name: "Patrick"},
-			},
-			shouldFail: true,
-		},
-		{
-			name: "Should not send mail with template when template path is invalid",
-			message: EmailMessage{
-				// From:    "",
-				// To:      to,
-				Subject: "Test Mail",
-				Body:    []byte("Hello Test"),
-			},
-			opts: EmailOption{
-				TemPath: "template/test.html",
-				TemData: struct{ Name string }{Name: "Patrick"},
-			},
-			shouldFail: true,
-		},
-	}
-
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			mailer := New(GoMailerOption{
-				Host:     host,
-				Port:     port,
-				Username: u.Address,
-				Password: password,
-			})
-
-			err := mailer.SendMailWithTemplate(tc.message.From, tc.message.To, tc.message.Subject, tc.opts)
-			if tc.shouldFail && err != nil {
-				assert.Error(t, err)
-			} else {
-				assert.NoError(t, err)
-			}
-
 		})
 	}
 }
