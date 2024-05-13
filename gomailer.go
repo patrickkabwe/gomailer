@@ -37,6 +37,7 @@ type EmailOption struct {
 	ContentType string // text/html or text/plain
 	Secure      bool
 	Attachments []Attachment
+	Template Template
 }
 
 // GoMailer is the interface that wraps the basic SendMail method for sending emails
